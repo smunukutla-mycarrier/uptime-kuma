@@ -262,6 +262,7 @@ class Database {
                 port: dbConfig.port,
                 user: dbConfig.username,
                 password: dbConfig.password,
+                ssl: dbConfig.ssl || {}
             });
 
             // Set to true, so for example "uptime.kuma", becomes `uptime.kuma`, not `uptime`.`kuma`
@@ -280,6 +281,7 @@ class Database {
                     password: dbConfig.password,
                     database: dbConfig.dbName,
                     timezone: "Z",
+                    ssl: dbConfig.ssl || {},
                     typeCast: function (field, next) {
                         if (field.type === "DATETIME") {
                             // Do not perform timezone conversion

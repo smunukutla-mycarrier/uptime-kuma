@@ -77,6 +77,18 @@ class SetupDatabase {
             dbConfig.dbName = process.env.UPTIME_KUMA_DB_NAME;
             dbConfig.username = process.env.UPTIME_KUMA_DB_USERNAME;
             dbConfig.password = process.env.UPTIME_KUMA_DB_PASSWORD;
+            
+            // If CA cert is provided, use it (replacing escaped newlines)
+            // Otherwise, use empty object to enable SSL without custom certificates
+            // https://sidorares.github.io/node-mysql2/docs/documentation/ssl
+            if (process.env.UPTIME_KUMA_DB_SSL_CA) {
+                dbConfig.ssl = {
+                    ca: process.env.UPTIME_KUMA_DB_SSL_CA.replace(/\\n/gm, '\n')
+                };
+            } else {
+                dbConfig.ssl = {};
+            }
+            
             Database.writeDBConfig(dbConfig);
         }
 
@@ -215,6 +227,7 @@ class SetupDatabase {
                             user: dbConfig.username,
                             password: dbConfig.password,
                             database: dbConfig.dbName,
+                            ssl: dbConfig.ssl || {}
                         });
                         await connection.execute("SELECT 1");
                         connection.end();
